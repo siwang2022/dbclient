@@ -1,15 +1,16 @@
 dbclient demonstrates a way to make DB struct in pg package of cc-utils able to switch db endpoint dynamically. 
-Main changes to pg package:
+Main changes to DB struct:
 1. Give sqlx.DB field a name so clients can't NOT call sqlx methods directly.
 2. Wrap 3 methods of sqlx (BeginTxx, MustBegin and QueryRowsContext) for the demo purpose. Each method
    1) check if db is in stop mode. If true the call will return an error or panic
    2) calling sql or sqlx methods directly.
-4. Add switchDB method
+3. Add switchDB method
    1) Set DB to stop mode
    2) Closes current sqlx DB instance and creates a new one.
    3) Set DB to start mode
+4. Add a goroutine to periodically trigger switching. 
   
-Note: for change #4, in real case it should be a goroutin, which periodically reads db endpoint from launchdarkly and once found any change then triggers the switch.
+Note: for change #4, in the real case it should periodically reads db endpoint from launchdarkly and once found any change then triggers the switch.
 
 The demo:
 1. Make one db call per second. 

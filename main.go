@@ -6,13 +6,6 @@ import (
 	"time"
 )
 
-func triggerSwitch(db *DbClient) {
-	for range time.Tick(time.Second * 5) {
-		log.Println("Time to switch db ")
-		_ = db.SwitchDB()
-	}
-}
-
 func doInsertMust(db *DbClient) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -86,9 +79,7 @@ func doQueryRows(db *DbClient) {
 }
 
 func main() {
-	db := ConnectDB("postgresql://127.0.0.1:5432/swang")
-
-	go triggerSwitch(db)
+	db := OpenDB("postgresql://127.0.0.1:5432/swang")
 
 	for {
 		// doInsertMust(db)

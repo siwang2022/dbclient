@@ -17,7 +17,8 @@ type DbClient struct {
 	url   string
 }
 
-func ConnectDB(url string) *DbClient {
+func OpenDB(url string) *DbClient {
+
 	dbClient := DbClient{
 		url:   url,
 		db:    nil,
@@ -25,6 +26,8 @@ func ConnectDB(url string) *DbClient {
 	}
 
 	dbClient.refreshSqlxDB()
+
+	go dbClient.triggerSwitch()
 
 	return &dbClient
 }
@@ -45,7 +48,14 @@ func (db *DbClient) refreshSqlxDB() error {
 	return nil
 }
 
-func (db *DbClient) SwitchDB() error {
+func (db *DbClient) triggerSwitch() {
+	for range time.Tick(time.Second * 5) {
+		log.Println("Time to switch db ")
+		_ = db.switchDB()
+	}
+}
+
+func (db *DbClient) switchDB() error {
 	log.Println("switch started")
 
 	// The url could change.
